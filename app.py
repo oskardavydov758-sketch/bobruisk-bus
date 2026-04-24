@@ -1,19 +1,25 @@
-import os, telebot, hashlib, time, base64, requests, json
+import os
+import telebot
+import hashlib
+import time
+import base64
+import requests
+import json
 from datetime import datetime, timedelta
 from flask import Flask, request
+
+# Фикс для Python 3.12+
 import pkgutil
 if not hasattr(pkgutil, 'get_loader'):
     import importlib
     pkgutil.get_loader = lambda name: importlib.util.find_spec(name)
+
 # Конфигурация
 TOKEN = '7689203577:AAG-banaMBPbgJaoZ6r3RbbD5gGyUsfZFLc'
 ADMIN_ID = 5852338439
 GH_TOKEN = os.environ.get('GH_TOKEN')
 REPO = os.environ.get('REPO')
 STATIC_URL = os.environ.get('STATIC_URL')
-
-if not GH_TOKEN or not REPO or not STATIC_URL:
-    raise ValueError('GH_TOKEN, REPO, STATIC_URL обязательны')
 
 bot = telebot.TeleBot(TOKEN, threaded=False)
 app = Flask(__name__)
@@ -128,6 +134,7 @@ TEMPLATE = '''<!DOCTYPE html>
 </html>'''
 
 def push_to_github(garage_num, time_from, time_to, hash_val):
+    print(f"DEBUG: GH_TOKEN={'есть' if GH_TOKEN else 'нет'}, REPO={REPO}, STATIC_URL={STATIC_URL}")
     if not GH_TOKEN or not REPO:
         return None
     try:
@@ -145,7 +152,7 @@ def push_to_github(garage_num, time_from, time_to, hash_val):
             print(f'GitHub API Error: {resp.status_code} {resp.text}')
             return None
     except Exception as e:
-        print(f'Push error: {e}')
+        print(f'PUSH ERROR: {e}')
         return None
 
 ### Обработчики бота
@@ -226,30 +233,7 @@ def handle_message(message):
         hash_val = hashlib.md5((garage_num + str(now.timestamp())).encode()).hexdigest()[:8]
         
         msg = bot.send_message(uid, '⏳ Генерирую билет...')
-try:
-    def push_to_github(garage_num, time_from, time_to, hash_val):
-    print(f"DEBUG: GH_TOKEN={'есть' if GH_TOKEN else 'нет'}, REPO={REPO}, STATIC_URL={STATIC_URL}")
-    if not GH_TOKEN or not REPO:
-        return None
-    try:
-        html_content = TEMPLATE.replace('{{GARAGE}}', garage_num).replace('{{TIME_FROM}}', time_from).replace('{{TIME_TO}}', time_to).replace('{{HASH}}', hash_val)
-        content_bytes = html_content.encode('utf-8')
-        b64_content = base64.b64encode(content_bytes).decode('utf-8')
-        file_path = f'tickets/ticket_{hash_val}.html'
-        url = f'https://api.github.com/repos/{REPO}/contents/{file_path}'
-        headers = {'Authorization': f'token {GH_TOKEN}', 'Accept': 'application/vnd.github.v3+json'}
-        data = {'message': f'Add ticket for {garage_num}', 'content': b64_content}
-        resp = requests.put(url, json=data, headers=headers)
-        if resp.status_code in [201, 200]:
-            return f'{STATIC_URL}/{file_path}'
-        else:
-            print(f'GitHub API Error: {resp.status_code} {resp.text}')
-            return None
-    except Exception as e:
-        print(f'PUSH ERROR: {e}')
-        return None
-    bot.edit_message_text(f'❌ Ошибка: {str(e)[:200]}', uid, msg.message_id)
-    return
+        url = push_to_github(garage_num, time_from, time_to, hash_val)
         
         if url:
             markup = telebot.types.InlineKeyboardMarkup()
