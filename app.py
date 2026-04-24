@@ -231,6 +231,23 @@ try:
     print(f"DEBUG: GH_TOKEN={'есть' if GH_TOKEN else 'нет'}, REPO={REPO}, STATIC_URL={STATIC_URL}")
     if not GH_TOKEN or not REPO:
         return None
+    try:
+        html_content = TEMPLATE.replace('{{GARAGE}}', garage_num).replace('{{TIME_FROM}}', time_from).replace('{{TIME_TO}}', time_to).replace('{{HASH}}', hash_val)
+        content_bytes = html_content.encode('utf-8')
+        b64_content = base64.b64encode(content_bytes).decode('utf-8')
+        file_path = f'tickets/ticket_{hash_val}.html'
+        url = f'https://api.github.com/repos/{REPO}/contents/{file_path}'
+        headers = {'Authorization': f'token {GH_TOKEN}', 'Accept': 'application/vnd.github.v3+json'}
+        data = {'message': f'Add ticket for {garage_num}', 'content': b64_content}
+        resp = requests.put(url, json=data, headers=headers)
+        if resp.status_code in [201, 200]:
+            return f'{STATIC_URL}/{file_path}'
+        else:
+            print(f'GitHub API Error: {resp.status_code} {resp.text}')
+            return None
+    except Exception as e:
+        print(f'PUSH ERROR: {e}')
+        return None
     bot.edit_message_text(f'❌ Ошибка: {str(e)[:200]}', uid, msg.message_id)
     return
         
