@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: bobruisk-bot
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: TELEGRAM_TOKEN
+        value: "7689203577:AAG-banaMBPbgJaoZ6r3RbbD5gGyUsfZFLc"
+      - key: GH_TOKEN
+        sync: false
+      - key: REPO
+        sync: false
+      - key: STATIC_URL
+        sync: false
