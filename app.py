@@ -226,7 +226,13 @@ def handle_message(message):
         hash_val = hashlib.md5((garage_num + str(now.timestamp())).encode()).hexdigest()[:8]
         
         msg = bot.send_message(uid, '⏳ Генерирую билет...')
-        url = push_to_github(garage_num, time_from, time_to, hash_val)
+try:
+    def push_to_github(garage_num, time_from, time_to, hash_val):
+    print(f"DEBUG: GH_TOKEN={'есть' if GH_TOKEN else 'нет'}, REPO={REPO}, STATIC_URL={STATIC_URL}")
+    if not GH_TOKEN or not REPO:
+        return None
+    bot.edit_message_text(f'❌ Ошибка: {str(e)[:200]}', uid, msg.message_id)
+    return
         
         if url:
             markup = telebot.types.InlineKeyboardMarkup()
