@@ -249,13 +249,14 @@ def webhook():
     return 'Bad request', 400
 
 @app.route('/')
+def home():
+    return 'Bot is running!', 200
+
+@app.route('/setup')
 def set_webhook():
     bot.remove_webhook()
-    external_url = os.environ.get("RENDER_EXTERNAL_URL")
-    if external_url:
-        bot.set_webhook(external_url + TOKEN)
-        return f"Webhook set to {external_url}", 200
-    return "RENDER_EXTERNAL_URL not set", 500
+    bot.set_webhook('https://bobruisk-bot.onrender.com/' + TOKEN)
+    return 'Webhook set!', 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
