@@ -259,11 +259,14 @@ def webhook():
 def home():
     return 'Bot is running!', 200
 
-@app.route('/setup')
-def set_webhook():
-    bot.remove_webhook()
-    bot.set_webhook('https://bobruisk-bot.onrender.com/' + TOKEN)
-    return 'Webhook set!', 200
+@app.route('/')
+def home():
+    try:
+        bot.remove_webhook()
+        bot.set_webhook('https://bobruisk-bot.onrender.com/' + TOKEN)
+        return 'Webhook set!', 200
+    except Exception as e:
+        return f'Error: {e}', 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
