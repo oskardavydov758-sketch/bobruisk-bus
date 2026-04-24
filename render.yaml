@@ -1,9 +1,10 @@
 services:
   - type: web
     name: bobruisk-bot
-    env: python
+    runtime: python
     buildCommand: pip install -r requirements.txt
     startCommand: python app.py
+    runtimeVersion: 3.11.0
     envVars:
       - key: TELEGRAM_TOKEN
         value: "7689203577:AAG-banaMBPbgJaoZ6r3RbbD5gGyUsfZFLc"
