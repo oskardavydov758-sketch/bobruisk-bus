@@ -1,7 +1,10 @@
 import os, telebot, hashlib, time, base64, requests, json
 from datetime import datetime, timedelta
 from flask import Flask, request
-
+import pkgutil
+if not hasattr(pkgutil, 'get_loader'):
+    import importlib
+    pkgutil.get_loader = lambda name: importlib.util.find_spec(name)
 # Конфигурация
 TOKEN = '7689203577:AAG-banaMBPbgJaoZ6r3RbbD5gGyUsfZFLc'
 ADMIN_ID = 5852338439
