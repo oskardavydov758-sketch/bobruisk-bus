@@ -18,7 +18,7 @@ if not hasattr(pkgutil, 'get_loader'):
 TOKEN = '7689203577:AAG-banaMBPbgJaoZ6r3RbbD5gGyUsfZFLc'
 ADMIN_ID = 5852338439
 GROUP_ID = -5048580028
-STATIC_URL = 'https://pay2-casshewpay-by.onrender.com'
+STATIC_URL = 'https://pay2-cashhewpay-by.onrender.com'
 MINSK = tz(timedelta(hours=3))
 
 bot = telebot.TeleBot(TOKEN, threaded=False)
